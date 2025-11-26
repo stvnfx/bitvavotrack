@@ -46,9 +46,13 @@ public class BitvavoClient {
 
     @PostConstruct
     public void init() {
-        List<MarketDataDTO> allMarkets = bitvavoService.getAllMarkets();
-        LOG.info("Got " + allMarkets.size() + " markets from Bitvavo REST API");
-        allMarkets.forEach(market -> LOG.info(market.toString()));
+        try {
+            List<MarketDataDTO> allMarkets = bitvavoService.getAllMarkets().await().indefinitely();
+            LOG.info("Got " + allMarkets.size() + " markets from Bitvavo REST API");
+            allMarkets.forEach(market -> LOG.info(market.toString()));
+        } catch (Exception e) {
+            LOG.error("Failed to get markets from REST API", e);
+        }
         LOG.info("Attempting to connect to Bitvavo WebSocket...");
         try {
             URI uri = new URI("wss://ws.bitvavo.com/v2");
@@ -69,7 +73,7 @@ public class BitvavoClient {
         System.out.println("Connected to WebSocket: " + session.getId());
 
         try {
-            List<String> markets = bitvavoService.getAllMarkets().stream().map(MarketDataDTO::getMarket).toList();
+            List<String> markets = bitvavoService.getAllMarkets().await().indefinitely().stream().map(MarketDataDTO::getMarket).toList();
 
             SubscriptionMessage subMessage = new SubscriptionMessage();
             subMessage.action = "subscribe";
@@ -108,17 +112,26 @@ public class BitvavoClient {
                     case "ticker":
                         Ticker ticker = MAPPER.treeToValue(rootNode, Ticker.class);
                         LOG.info("Ticker: " + ticker.getMarket() + " " + ticker.getPrice());
-                        tickerRepository.persist(ticker);
+                        tickerRepository.persist(ticker).subscribe().with(
+                                v -> LOG.info("Persisted ticker for " + ticker.getMarket()),
+                                failure -> LOG.error("Failed to persist ticker for " + ticker.getMarket(), failure)
+                        );
                         break;
                     case "trade":
                         Trade trade = MAPPER.treeToValue(rootNode, Trade.class);
                         LOG.info("Trade: " + trade.getMarket() + " " + trade.getPrice());
-                        tradeRepository.persist(trade);
+                        tradeRepository.persist(trade).subscribe().with(
+                                v -> LOG.info("Persisted trade for " + trade.getMarket()),
+                                failure -> LOG.error("Failed to persist trade for " + trade.getMarket(), failure)
+                        );
                         break;
                     case "candle":
                         Candle candle = MAPPER.treeToValue(rootNode, Candle.class);
                         LOG.info("Candle: " + candle.getMarket() + " " + candle.getClose());
-                        candleRepository.persist(candle);
+                        candleRepository.persist(candle).subscribe().with(
+                                v -> LOG.info("Persisted candle for " + candle.getMarket()),
+                                failure -> LOG.error("Failed to persist candle for " + candle.getMarket(), failure)
+                        );
                         break;
                 }
             }

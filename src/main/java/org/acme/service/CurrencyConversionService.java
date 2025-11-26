@@ -22,14 +22,12 @@ public class CurrencyConversionService {
     public void updateConversionRates() {
         exchangeRateClient.getLatestRates("EUR")
                 .subscribe().with(response -> {
-                    Panache.withTransaction(() ->
-                            CurrencyConversion.deleteAll()
-                                    .chain(() -> CurrencyConversion.persist(response.rates.entrySet().stream()
-                                            .map(entry -> new CurrencyConversion(response.base, entry.getKey(), entry.getValue()))
-                                            .collect(Collectors.toList())))
-                    ).onFailure().invoke(e -> {
-                        Log.error("Failed to update currency conversion rates", e);
-                    }).subscribe().with(v -> {});
+                    Panache.withTransaction(CurrencyConversion::deleteAll)
+                            .chain(() -> CurrencyConversion.persist(response.rates.entrySet().stream()
+                                    .map(entry -> new CurrencyConversion(response.base, entry.getKey(), entry.getValue()))
+                                    .collect(Collectors.toList())))
+                            .onFailure().invoke(e -> Log.error("Failed to update currency conversion rates", e))
+                            .subscribe().with(v -> Log.info("Successfully updated currency conversion rates"));
                 });
     }
 }
