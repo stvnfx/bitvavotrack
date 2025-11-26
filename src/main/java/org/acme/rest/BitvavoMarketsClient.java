@@ -8,13 +8,17 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import java.util.List;
 
 @RegisterRestClient(baseUri = "https://api.bitvavo.com/v2")
-@Path("/markets")
 public interface BitvavoMarketsClient {
 
-    /**
-     * Gets a list of all markets from the Bitvavo REST API.
-     * @return A list of MarketDataDTO objects.
-     */
     @GET
+    @Path("/markets")
     List<MarketDataDTO> getMarkets();
+
+    @GET
+    @Path("/assets")
+    List<org.acme.dto.AssetDTO> getAssets();
+
+    @GET
+    @Path("/ticker/24h")
+    List<org.acme.dto.Ticker24hDTO> getTicker24h();
 }

@@ -12,23 +12,42 @@ import java.util.List;
 @ApplicationScoped
 public class BitvavoService {
 
-    // Inject the automatically generated REST Client
     @Inject
     @RestClient
     BitvavoMarketsClient marketsClient;
 
-    /**
-     * Retrieves all markets by calling the REST client.
-     * This method provides a nice abstraction over the direct API call.
-     *
-     * @return A list of MarketDataDTO objects, or an empty list if an error occurs.
-     */
     public List<MarketDataDTO> getAllMarkets() {
         Log.info("Fetching all markets from Bitvavo REST API...");
         try {
-            return marketsClient.getMarkets();
+            List<MarketDataDTO> markets = marketsClient.getMarkets();
+            Log.info("Successfully fetched " + markets.size() + " markets.");
+            return markets;
         } catch (Exception e) {
             Log.error("Failed to fetch markets from Bitvavo API", e);
+            return List.of();
+        }
+    }
+
+    public List<org.acme.dto.AssetDTO> getAllAssets() {
+        Log.info("Fetching all assets from Bitvavo REST API...");
+        try {
+            List<org.acme.dto.AssetDTO> assets = marketsClient.getAssets();
+            Log.info("Successfully fetched " + assets.size() + " assets.");
+            return assets;
+        } catch (Exception e) {
+            Log.error("Failed to fetch assets from Bitvavo API", e);
+            return List.of();
+        }
+    }
+
+    public List<org.acme.dto.Ticker24hDTO> getTicker24h() {
+        Log.info("Fetching 24h ticker data from Bitvavo REST API...");
+        try {
+            List<org.acme.dto.Ticker24hDTO> ticker24h = marketsClient.getTicker24h();
+            Log.info("Successfully fetched " + ticker24h.size() + " ticker 24h data.");
+            return ticker24h;
+        } catch (Exception e) {
+            Log.error("Failed to fetch 24h ticker data from Bitvavo API", e);
             return List.of();
         }
     }

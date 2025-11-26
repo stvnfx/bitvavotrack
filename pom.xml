@@ -51,9 +51,8 @@
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.duckdb</groupId>
-            <artifactId>duckdb_jdbc</artifactId>
-            <version>1.3.2.0</version>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-duckdb</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -72,6 +71,11 @@
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ta4j</groupId>
+            <artifactId>ta4j-core</artifactId>
+            <version>0.18</version>
         </dependency>
     </dependencies>
 
