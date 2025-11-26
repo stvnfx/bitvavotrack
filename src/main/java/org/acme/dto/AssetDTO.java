@@ -8,6 +8,13 @@ public class AssetDTO {
     private String name;
     private int decimals;
 
+    public AssetDTO() {
+    }
+
+    public AssetDTO(String symbol) {
+        this.symbol = symbol;
+    }
+
     public String getSymbol() {
         return symbol;
     }
