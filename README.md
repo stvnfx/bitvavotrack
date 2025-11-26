@@ -1,62 +1,38 @@
-# code-with-quarkus
+# Crypto Trading Data
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This is a cryptocurrency trading data application that collects data from the Bitvavo exchange. It uses a WebSocket to collect real-time trading data and a REST API for other market information. The data is stored in a DuckDB database.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Architecture
 
-## Running the application in dev mode
+The application is built with Java and Quarkus. It consists of the following main components:
 
-You can run your application in dev mode that enables live coding using:
+- **WebSocket Client:** Connects to the Bitvavo WebSocket API to receive real-time trade data.
+- **REST Client:** Connects to the Bitvavo REST API to fetch additional market data.
+- **Panache Repositories:** Used for data persistence with a DuckDB database.
+- **Ta4j:** A library for technical analysis, used for backtesting features.
 
-```shell script
+## How to Set Up
+
+To set up the project, you need to have the following installed:
+
+- Java 21 or later
+- Maven 3.8.1 or later
+
+
+## How to Run
+
+To run the application, use the following Maven command:
+
+```bash
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+The application will be available at http://localhost:8080.
 
-## Packaging and running the application
+## Database
 
-The application can be packaged using:
+The application uses DuckDB for data storage. The database file is located in the `data/` directory. The database is created automatically when the application is started for the first time.
 
-```shell script
-./mvnw package
-```
+## Future Developments
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+The project has a long-term goal of migrating from DuckDB to PostgreSQL with the TimescaleDB extension. This will allow for better integration with Grafana for data visualization.
